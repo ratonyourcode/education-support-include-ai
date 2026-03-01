@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Danh sách bài trắc nghiệm</title>
+
+  <script>
+    (function(){
+      var t = localStorage.getItem('quiz-app-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/animation.css" />
+
+  <style>
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+    }
+    @media (max-width: 600px) { .stats-bar { grid-template-columns: 1fr; } }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      text-align: center;
+      min-height: 90px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .stat-num {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+    .stat-label { color: var(--text-muted); font-size: 0.85rem; }
+
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: var(--space-lg);
+    }
+
+    .quiz-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: all var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+    .quiz-card:hover {
+      border-color: var(--primary-light);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-3px);
+    }
+
+    .quiz-card-accent {
+      height: 4px;
+      background: var(--gradient-primary);
+    }
+
+    .quiz-card-body { padding: var(--space-lg); flex: 1; }
+
+    .quiz-card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.4rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .quiz-card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: var(--space-md);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .quiz-card-meta {
+      display: flex;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-md);
+    }
+
+    .quiz-card-footer {
+      padding: var(--space-sm) var(--space-lg) var(--space-md);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem var(--space-xl);
+      color: var(--text-muted);
+    }
+    .empty-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .empty-state h3 { color: var(--text-secondary); margin-bottom: 0.5rem; }
+
+    .page-header {
+      margin-bottom: var(--space-xl);
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="container">
+    <div class="header-inner">
+      <a href="index.html" class="header-logo">
+        <span>🎓</span> Quiz AI Creator
+      </a>
+      <nav class="header-nav">
+        <button class="btn btn-primary btn-sm" onclick="window.location.href='index.html'">➕ Tạo mới</button>
+        <button class="btn btn-secondary btn-sm" onclick="window.location.href='quiz-list.html'">📋 Chọn bài làm</button>
+        <button id="theme-toggle" title="Chuyển theme">🌙</button>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main style="padding: var(--space-xl) 0; min-height: calc(100vh - 64px);">
+  <div class="container">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <h1>📋 Danh sách bài trắc nghiệm</h1>
+      <p>Quản lý tất cả các bài trắc nghiệm của bạn</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar" id="stats-bar">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-total">0</div>
+        <div class="stat-label">Tổng bài trắc nghiệm</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-questions">0</div>
+        <div class="stat-label">Tổng câu hỏi</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-date">—</div>
+        <div class="stat-label">Tạo gần nhất</div>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="quiz-grid stagger" id="quiz-grid">
+      <!-- Rendered by JS -->
+    </div>
+
+  </div>
+</main>
+
+<div id="notification-container"></div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header">
+      <h3 style="margin:0;">🗑️ Xác nhận xóa</h3>
+      <button class="btn btn-icon btn-secondary" onclick="UI.closeModal('delete-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Bạn có chắc muốn xóa bài trắc nghiệm này? Hành động này không thể hoàn tác.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="UI.closeModal('delete-modal')">Hủy</button>
+      <button class="btn btn-danger" id="btn-confirm-delete">🗑️ Xóa</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/services/exportService.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/quiz.js"></script>
+
+<script>
+  let deleteTargetId = null;
+
+  function loadQuizzes() {
+    const quizzes = JSON.parse(localStorage.getItem('quizzes') || '[]');
+    const grid = document.getElementById('quiz-grid');
+
+    // Stats
+    document.getElementById('stat-total').textContent = quizzes.length;
+    document.getElementById('stat-questions').textContent = quizzes.reduce((s,q)=>s+(q.questions||[]).length,0);
+    if (quizzes.length > 0) {
+      const latest = quizzes.reduce((a,b)=> new Date(a.createdAt) > new Date(b.createdAt) ? a : b);
+      const d = new Date(latest.createdAt);
+      document.getElementById('stat-date').textContent = d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'});
+    }
+
+    if (quizzes.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📭</div>
+          <h3>Chưa có bài trắc nghiệm nào</h3>
+          <p>Hãy tạo bài trắc nghiệm đầu tiên của bạn!</p>
+          <button class="btn btn-primary" style="margin-top:1.5rem;" onclick="window.location.href='index.html'">
+            ➕ Tạo bài mới
+          </button>
+        </div>`;
+      return;
+    }
+
+    const accents = [
+      'linear-gradient(135deg,#6366f1,#818cf8)',
+      'linear-gradient(135deg,#10b981,#34d399)',
+      'linear-gradient(135deg,#f59e0b,#fbbf24)',
+      'linear-gradient(135deg,#ef4444,#f87171)',
+      'linear-gradient(135deg,#3b82f6,#60a5fa)',
+      'linear-gradient(135deg,#8b5cf6,#a78bfa)',
+    ];
+
+    grid.innerHTML = quizzes.map((q, i) => `
+      <div class="quiz-card animate-slide-up" style="animation-delay:${i*0.05}s">
+        <div class="quiz-card-accent" style="background:${accents[i % accents.length]}"></div>
+        <div class="quiz-card-body">
+          <div class="quiz-card-title">${escHtml(q.title || 'Không có tiêu đề')}</div>
+          <div class="quiz-card-desc">${escHtml(q.description || 'Không có mô tả')}</div>
+          <div class="quiz-card-meta">
+            <span class="badge badge-primary">📝 ${(q.questions||[]).length} câu</span>
+            <span class="badge" style="background:var(--bg-surface-2);color:var(--text-muted);">
+              📅 ${q.createdAt ? new Date(q.createdAt).toLocaleDateString('vi-VN') : '—'}
+            </span>
+          </div>
+        </div>
+        <div class="quiz-card-footer">
+          <button class="btn btn-primary btn-sm" onclick="takeQuiz('${q.id}')">🎯 Làm bài</button>
+          <button class="btn btn-secondary btn-sm" onclick="viewQuiz('${q.id}')">👁️ Xem</button>
+          <button class="btn btn-outline btn-sm" onclick="exportQuiz('${q.id}')">📤 Xuất</button>
+          <button class="btn btn-danger btn-sm" onclick="confirmDelete('${q.id}')" style="margin-left:auto;">🗑️</button>
+        </div>
+      </div>`).join('');
+  }
+
+  function takeQuiz(id) {
+    window.location.href = `takequiz/take_quiz.html?id=${id}`;
+  }
+
+  function viewQuiz(id) {
+    window.location.href = `view-quiz.html?id=${id}`;
+  }
+
+  function exportQuiz(id) {
+    ExportManager.openExportModal(id);
+  }
+
+  function confirmDelete(id) {
+    deleteTargetId = id;
+    UI.openModal('delete-modal');
+  }
+
+  document.getElementById('btn-confirm-delete').addEventListener('click', () => {
+    if (!deleteTargetId) return;
+    const quizzes = JSON.parse(localStorage.getItem('quizzes')||'[]')
+      .filter(q => q.id !== deleteTargetId);
+    localStorage.setItem('quizzes', JSON.stringify(quizzes));
+    UI.closeModal('delete-modal');
+    UI.success('Đã xóa bài trắc nghiệm');
+    deleteTargetId = null;
+    loadQuizzes();
+  });
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  loadQuizzes();
+</script>
+</body>
+</html>

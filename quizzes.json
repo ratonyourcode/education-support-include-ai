@@ -1,0 +1,194 @@
+[
+  {
+    "id": "001941c7-7658-4cf1-ac93-d8da29f9eba8",
+    "title": "sdfsf",
+    "description": "df",
+    "questions": [
+      {
+        "correctAnswer": 1,
+        "options": [
+          "Julius Caesar",
+          "Augustus",
+          "Nero",
+          "Constantine Đại đế"
+        ],
+        "question": "Ai là vị Hoàng đế La Mã đầu tiên, người đã chuyển đổi Cộng hòa La Mã thành Đế quốc La Mã?",
+        "id": 1772369262907
+      },
+      {
+        "correctAnswer": 1,
+        "options": [
+          "1066",
+          "1096",
+          "1187",
+          "1204"
+        ],
+        "question": "Cuộc Thập tự chinh đầu tiên được phát động vào năm nào?",
+        "id": 1772369262907
+      },
+      {
+        "correctAnswer": 2,
+        "options": [
+          "Christopher Columbus",
+          "Vasco da Gama",
+          "Ferdinand Magellan",
+          "James Cook"
+        ],
+        "question": "Nhà thám hiểm nào được cho là người đầu tiên hoàn thành chuyến đi vòng quanh thế giới bằng đường biển?",
+        "id": 1772369262907
+      },
+      {
+        "correctAnswer": 2,
+        "options": [
+          "1954",
+          "1968",
+          "1973",
+          "1975"
+        ],
+        "question": "Hiệp định Paris về chấm dứt chiến tranh, lập lại hòa bình ở Việt Nam được ký kết vào năm nào?",
+        "id": 1772369262907
+      },
+      {
+        "correctAnswer": 1,
+        "options": [
+          "Đức sáp nhập Áo (Anschluss)",
+          "Đức tấn công Ba Lan",
+          "Nhật Bản tấn công Trân Châu Cảng",
+          "Đức ký Hiệp ước Molotov–Ribbentrop"
+        ],
+        "question": "Sự kiện nào được xem là khởi đầu chính thức của Chiến tranh thế giới thứ hai ở châu Âu?",
+        "id": 1772369262907
+      }
+    ],
+    "createdAt": "2026-03-01T12:50:41.785325+00:00",
+    "updatedAt": "2026-03-01T12:50:41.785325+00:00"
+  },
+  {
+    "id": "57a8e934-9d52-4426-a3fe-99d3c36ca2a9",
+    "title": "èhewfhjj",
+    "description": "bưqdhj",
+    "questions": [
+      {
+        "correctAnswer": 2,
+        "options": [
+          "EPYC",
+          "Threadripper",
+          "Ryzen",
+          "Athlon"
+        ],
+        "question": "Dòng CPU nào của AMD thường được sử dụng cho máy tính để bàn và máy tính xách tay phổ thông, cạnh tranh trực tiếp với Intel Core i-series?",
+        "id": 1772372047592
+      },
+      {
+        "correctAnswer": 2,
+        "options": [
+          "GCN (Graphics Core Next)",
+          "Vega",
+          "RDNA (Radeon DNA)",
+          "Fermi"
+        ],
+        "question": "Kiến trúc đồ họa (GPU) hiện tại của AMD được sử dụng trong các card đồ họa Radeon RX 6000 và RX 7000 series là gì?",
+        "id": 1772372047592
+      },
+      {
+        "correctAnswer": 2,
+        "options": [
+          "Ryzen",
+          "Threadripper",
+          "EPYC",
+          "Athlon"
+        ],
+        "question": "Dòng vi xử lý nào của AMD được thiết kế đặc biệt cho các máy chủ (server) và trung tâm dữ liệu (data center), tập trung vào hiệu năng đa lõi và khả năng mở rộng?",
+        "id": 1772372047592
+      },
+      {
+        "correctAnswer": 1,
+        "options": [
+          "G-Sync",
+          "FreeSync",
+          "V-Sync",
+          "Adaptive-Sync"
+        ],
+        "question": "Công nghệ đồng bộ hóa hình ảnh nào của AMD giúp loại bỏ hiện tượng xé hình (screen tearing) và giật hình (stuttering) bằng cách điều chỉnh tần số quét màn hình theo tốc độ khung hình của GPU?",
+        "id": 1772372047592
+      },
+      {
+        "correctAnswer": 1,
+        "options": [
+          "Một loại card đồ họa rời hiệu năng cao.",
+          "Một vi xử lý (CPU) tích hợp nhân đồ họa (GPU) trên cùng một đế bán dẫn.",
+          "Một bộ nhớ RAM tốc độ cao dành cho máy chủ.",
+          "Một công nghệ tản nhiệt tiên tiến cho CPU."
+        ],
+        "question": "APU (Accelerated Processing Unit) của AMD là gì?",
+        "id": 1772372047592
+      }
+    ],
+    "createdAt": "2026-03-01T13:34:22.316600+00:00",
+    "updatedAt": "2026-03-01T13:34:22.316600+00:00"
+  },
+  {
+    "id": "866cc63b-c74f-44f6-b0f9-f49e5c7e8a8b",
+    "title": "oiu4tjihtio[j342iop[j32",
+    "description": "èiuhfejkesfiuohewruh",
+    "questions": [
+      {
+        "correctAnswer": 1,
+        "options": [
+          "Quang Trung (Nguyễn Huệ)",
+          "Cảnh Thịnh (Nguyễn Quang Toản)",
+          "Gia Long (Nguyễn Phúc Ánh)",
+          "Lê Chiêu Thống"
+        ],
+        "question": "Tiền \"Thành Hưng Thông Bảo\" được ban hành dưới triều đại của vị vua nào?",
+        "id": 1772372108548
+      },
+      {
+        "correctAnswer": 2,
+        "options": [
+          "Vàng",
+          "Bạc",
+          "Đồng",
+          "Sắt"
+        ],
+        "question": "Đa số các đồng tiền \"Thành Hưng Thông Bảo\" được đúc bằng chất liệu chủ yếu nào?",
+        "id": 1772372108548
+      },
+      {
+        "correctAnswer": 2,
+        "options": [
+          "Nhà Hậu Lê",
+          "Nhà Mạc",
+          "Nhà Tây Sơn",
+          "Nhà Nguyễn"
+        ],
+        "question": "Tiền \"Thành Hưng Thông Bảo\" là loại tiền tệ thuộc vương triều nào trong lịch sử Việt Nam?",
+        "id": 1772372108548
+      },
+      {
+        "correctAnswer": 1,
+        "options": [
+          "Vua Quang Trung",
+          "Vua Cảnh Thịnh",
+          "Vua Gia Long",
+          "Vua Lê Hiển Tông"
+        ],
+        "question": "Niên hiệu \"Thành Hưng\" trên đồng tiền này đề cập đến giai đoạn cai trị của vị vua nào?",
+        "id": 1772372108548
+      },
+      {
+        "correctAnswer": 1,
+        "options": [
+          "Rất tinh xảo và đồng đều",
+          "Thường kém hơn, thô hơn do tình hình chiến tranh",
+          "Tương đương, không có sự khác biệt đáng kể",
+          "Chỉ dùng cho mục đích nghi lễ, không lưu hành rộng rãi"
+        ],
+        "question": "So với các đồng tiền đúc vào thời bình, chất lượng đúc tiền \"Thành Hưng Thông Bảo\" thường có đặc điểm gì?",
+        "id": 1772372108548
+      }
+    ],
+    "createdAt": "2026-03-01T13:35:16.867444+00:00",
+    "updatedAt": "2026-03-01T13:35:16.867444+00:00"
+  }
+]

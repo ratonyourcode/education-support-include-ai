@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz AI Creator - Tạo Trắc Nghiệm</title>
+
+  <!-- Theme phải load TRƯỚC tiên để tránh flicker -->
+  <script>
+    (function(){
+      var t = localStorage.getItem('quiz-app-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/animation.css" />
+
+  <style>
+    /* ---- Page-specific styles ---- */
+    .main-wrapper {
+      min-height: calc(100vh - 64px);
+      padding: var(--space-xl) 0;
+    }
+
+    .create-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: var(--space-xl);
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .create-layout { grid-template-columns: 1fr; }
+    }
+
+    /* Quiz info form */
+    .quiz-info-form {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-lg);
+    }
+
+    .form-group { margin-bottom: var(--space-md); }
+
+    /* Questions */
+    .questions-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-md);
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    .question-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md) var(--space-lg);
+      margin-bottom: var(--space-md);
+      transition: all var(--transition);
+    }
+    .question-card:hover {
+      border-color: var(--primary-light);
+      box-shadow: var(--shadow-md);
+    }
+
+    .question-header {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-md);
+      margin-bottom: var(--space-sm);
+    }
+
+    .question-num {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      background: var(--gradient-primary);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .question-text {
+      flex: 1;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .question-actions {
+      display: flex;
+      gap: var(--space-xs);
+      flex-shrink: 0;
+    }
+
+    .options-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin-left: 44px;
+    }
+
+    .opt-chip {
+      background: var(--bg-surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.3rem 0.7rem;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+    .opt-chip.correct {
+      background: rgba(16,185,129,0.1);
+      border-color: var(--success);
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    /* Sidebar */
+    .sidebar-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      position: sticky;
+      top: 80px;
+    }
+
+    .sidebar-stat {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+    .sidebar-stat:last-child { border-bottom: none; }
+    .sidebar-stat-value {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--primary);
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+
+    /* Question form in modal */
+    .option-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-sm);
+    }
+    .option-letter {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      background: var(--bg-surface-2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="container">
+    <div class="header-inner">
+      <a href="index.html" class="header-logo">
+        <span>🎓</span> Quiz AI Creator
+      </a>
+      <nav class="header-nav">
+        <button class="btn btn-secondary btn-sm" onclick="window.location.href='quiz-list.html'">📋 Danh sách</button>
+        <button id="theme-toggle" title="Chuyển theme">🌙</button>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="main-wrapper page-with-sidebar">
+  <div class="container">
+    <div class="create-layout">
+
+      <!-- Left: Form -->
+      <div>
+        <!-- Quiz Info -->
+        <div class="quiz-info-form">
+          <h2 style="margin-bottom:var(--space-lg);">✏️ Tạo bài trắc nghiệm</h2>
+          <div class="form-group">
+            <label for="quiz-title">Tiêu đề *</label>
+            <input id="quiz-title" type="text" placeholder="Nhập tiêu đề bài trắc nghiệm..." />
+          </div>
+          <div class="form-group">
+            <label for="quiz-description">Mô tả</label>
+            <textarea id="quiz-description" rows="2" placeholder="Mô tả ngắn về bài trắc nghiệm..."></textarea>
+          </div>
+        </div>
+
+        <!-- Questions -->
+        <div>
+          <div class="questions-header">
+            <h3>Câu hỏi <span class="badge badge-primary" id="question-count">0</span></h3>
+            <div style="display:flex;gap:var(--space-sm);">
+              <button class="btn btn-outline btn-sm" id="btn-ai">🤖 Tạo bằng AI</button>
+              <button class="btn btn-primary btn-sm" id="btn-add-question">➕ Thêm câu hỏi</button>
+            </div>
+          </div>
+          <div id="questions-list"></div>
+        </div>
+      </div>
+
+      <!-- Right: Sidebar -->
+      <div class="sidebar-card">
+        <h4 style="margin-bottom:var(--space-md);">📊 Tổng quan</h4>
+        <div class="sidebar-stat">
+          <span>Số câu hỏi</span>
+          <span class="sidebar-stat-value" id="question-count-sidebar">0</span>
+        </div>
+        <div class="sidebar-stat">
+          <span>Trạng thái</span>
+          <span class="badge badge-warning">Đang soạn</span>
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-success" id="btn-save">💾 Lưu bài trắc nghiệm</button>
+          <button class="btn btn-secondary" id="btn-reset">🔄 Làm mới</button>
+        </div>
+
+        <!-- Export: hiện sau khi lưu quiz thành công, có nút ẩn/hiện -->
+        <div id="sidebar-export" style="display:none;">
+          <hr style="border:none;border-top:1px solid var(--border);margin:var(--space-lg) 0;" />
+          <!-- Header toggle -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;">📤 Xuất file</span>
+            <button id="btn-toggle-export" onclick="
+              var body = document.getElementById('export-body');
+              var isHidden = body.style.display === 'none';
+              body.style.display = isHidden ? '' : 'none';
+              this.textContent = isHidden ? '▲ Ẩn' : '▼ Hiện';
+            " style="font-size:0.72rem;padding:2px 8px;border-radius:99px;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--text-muted);">▲ Ẩn</button>
+          </div>
+          <div id="export-body">
+            <div id="sidebar-export-container"></div>
+          </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:var(--space-lg) 0;" />
+
+        <!-- Phím tắt có thể ẩn/hiện -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-sm);">
+          <h4 style="margin:0;font-size:0.9rem;">⌨️ Phím tắt</h4>
+          <button onclick="
+            var body = document.getElementById('shortcut-body');
+            var isHidden = body.style.display === 'none';
+            body.style.display = isHidden ? '' : 'none';
+            this.textContent = isHidden ? '▲' : '▼';
+          " style="font-size:0.72rem;padding:2px 7px;border-radius:99px;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--text-muted);">▲</button>
+        </div>
+        <div id="shortcut-body" style="font-size:0.8rem;color:var(--text-muted);line-height:2;">
+          <div><kbd>Ctrl+S</kbd> Lưu bài</div>
+          <div><kbd>Ctrl+Q</kbd> Thêm câu hỏi</div>
+          <div><kbd>Ctrl+Shift+L</kbd> Đổi theme</div>
+          <div><kbd>ESC</kbd> Đóng hộp thoại</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<!-- NOTIFICATION -->
+<div id="notification-container"></div>
+
+<!-- ============ QUESTION MODAL ============ -->
+<div class="modal-overlay" id="question-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="q-modal-title" style="margin:0;">Thêm câu hỏi</h3>
+      <button id="btn-q-close" class="btn btn-icon btn-secondary">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Nội dung câu hỏi *</label>
+        <textarea id="q-text" rows="3" placeholder="Nhập câu hỏi..."></textarea>
+      </div>
+      <label style="margin-bottom:var(--space-sm);display:block;">Các đáp án *</label>
+      <div class="option-row"><div class="option-letter">A</div><input id="q-opt-0" type="text" placeholder="Đáp án A" /></div>
+      <div class="option-row"><div class="option-letter">B</div><input id="q-opt-1" type="text" placeholder="Đáp án B" /></div>
+      <div class="option-row"><div class="option-letter">C</div><input id="q-opt-2" type="text" placeholder="Đáp án C" /></div>
+      <div class="option-row"><div class="option-letter">D</div><input id="q-opt-3" type="text" placeholder="Đáp án D" /></div>
+      <div class="form-group" style="margin-top:var(--space-md);">
+        <label for="q-correct">Đáp án đúng *</label>
+        <select id="q-correct">
+          <option value="0">A - Đáp án A</option>
+          <option value="1">B - Đáp án B</option>
+          <option value="2">C - Đáp án C</option>
+          <option value="3">D - Đáp án D</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="btn-q-close-2" class="btn btn-secondary" onclick="UI.closeModal('question-modal')">Hủy</button>
+      <button id="btn-q-save" class="btn btn-primary">💾 Lưu câu hỏi</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ AI MODAL ============ -->
+<div class="modal-overlay" id="ai-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 style="margin:0;">🤖 Tạo câu hỏi bằng AI</h3>
+      <button id="btn-ai-close" class="btn btn-icon btn-secondary">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="ai-subject">Chủ đề / Môn học *</label>
+        <input id="ai-subject" type="text" placeholder="VD: Toán học, Lịch sử Việt Nam, Python..." />
+      </div>
+      <div class="form-group">
+        <label for="ai-difficulty">Độ khó</label>
+        <select id="ai-difficulty">
+          <option value="easy">Dễ</option>
+          <option value="medium" selected>Trung bình</option>
+          <option value="hard">Khó</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="ai-count">Số câu hỏi (1-20)</label>
+        <input id="ai-count" type="number" value="5" min="1" max="20" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="UI.closeModal('ai-modal')">Hủy</button>
+      <button id="btn-ai-generate" class="btn btn-primary">✨ Tạo ngay</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="js/services/exportService.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/main.js"></script>
+<script>
+  // Sync sidebar count
+  const observer = new MutationObserver(() => {
+    const c = document.getElementById('question-count');
+    const s = document.getElementById('question-count-sidebar');
+    if (c && s) s.textContent = c.textContent;
+  });
+  const countEl = document.getElementById('question-count');
+  if (countEl) observer.observe(countEl, { childList: true });
+</script>
+
+<!-- ══════════════════════════════════════════════
+     PHẦN 3: SIDEBAR TRÁI HIỆN ĐẠI (AI-style)
+     - Toggle ẩn/hiện bằng nút ☰
+     - Thu gọn: chỉ icon (48px)
+     - Mở rộng: icon + text (200px)
+     - Transition 0.25s ease
+     - Fixed bên trái, không che content
+     - z-index 30 (dưới header 100, dưới modal 100)
+     - Tự ẩn trên mobile ≤768px
+══════════════════════════════════════════════ -->
+<style>
+  /* ──── AI SIDEBAR ──── */
+  :root {
+    --sb-width-open:   200px;
+    --sb-width-closed: 52px;
+    --sb-transition:   0.25s ease;
+  }
+
+  .ai-sidebar {
+    position: fixed;
+    left: 0;
+    top: 64px;           /* dưới header */
+    bottom: 0;
+    width: var(--sb-width-open);
+    background: var(--card-bg);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 30;
+    transition: width var(--sb-transition);
+    overflow: hidden;    /* clip text khi thu gọn */
+    box-shadow: 2px 0 12px rgba(0,0,0,0.06);
+  }
+  .ai-sidebar.closed {
+    width: var(--sb-width-closed);
+  }
+
+  /* Toggle button ở đầu sidebar */
+  .sb-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 14px 10px;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    font-weight: 600;
+    width: 100%;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    transition: color 0.2s;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .sb-toggle:hover { color: var(--primary); }
+  .sb-toggle .sb-icon { font-size: 1.15rem; flex-shrink: 0; }
+  .sb-toggle .sb-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    transition: opacity var(--sb-transition);
+    white-space: nowrap;
+  }
+  .ai-sidebar.closed .sb-label { opacity: 0; pointer-events: none; }
+
+  /* Nav items */
+  .sb-nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .sb-nav::-webkit-scrollbar { width: 4px; }
+  .sb-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .sb-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    font-weight: 500;
+    width: 100%;
+    text-align: left;
+    transition: background 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+  }
+  .sb-item:hover {
+    background: rgba(99,102,241,0.08);
+    color: var(--primary);
+  }
+  .sb-item.sb-active {
+    background: rgba(99,102,241,0.12);
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .sb-item .sb-item-icon {
+    font-size: 1.05rem;
+    flex-shrink: 0;
+    width: 22px;
+    text-align: center;
+  }
+  .sb-item .sb-item-text {
+    transition: opacity var(--sb-transition);
+    white-space: nowrap;
+  }
+  .ai-sidebar.closed .sb-item-text { opacity: 0; }
+
+  /* Tooltip khi đóng */
+  .ai-sidebar.closed .sb-item[data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: calc(var(--sb-width-closed) + 4px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--text-primary);
+    color: var(--bg-surface, #fff);
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 5px 10px;
+    border-radius: 7px;
+    pointer-events: none;
+    z-index: 200;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  /* Divider */
+  .sb-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 6px 10px;
+    flex-shrink: 0;
+  }
+
+  /* Section label */
+  .sb-section-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    padding: 8px 12px 4px;
+    white-space: nowrap;
+    transition: opacity var(--sb-transition);
+  }
+  .ai-sidebar.closed .sb-section-label { opacity: 0; }
+
+  /* Push main content khi sidebar mở */
+  .page-with-sidebar {
+    margin-left: var(--sb-width-open);
+    transition: margin-left var(--sb-transition);
+  }
+  .page-with-sidebar.sidebar-closed {
+    margin-left: var(--sb-width-closed);
+  }
+
+  /* Ẩn sidebar trên mobile */
+  @media (max-width: 768px) {
+    .ai-sidebar { display: none; }
+    .page-with-sidebar { margin-left: 0 !important; }
+  }
+</style>
+
+<!-- AI Sidebar -->
+<nav class="ai-sidebar" id="ai-sidebar">
+
+  <!-- Toggle button -->
+  <button class="sb-toggle" id="sb-toggle-btn" title="Ẩn/hiện sidebar">
+    <span class="sb-icon">☰</span>
+    <span class="sb-label">Menu</span>
+  </button>
+
+  <div class="sb-nav">
+
+    <!-- Tạo quiz -->
+    <div class="sb-section-label">Soạn bài</div>
+
+    <button class="sb-item sb-active" data-tip="Thêm câu hỏi"
+      onclick="document.getElementById('btn-add-question').click()">
+      <span class="sb-item-icon">➕</span>
+      <span class="sb-item-text">Thêm câu hỏi</span>
+    </button>
+
+    <button class="sb-item" data-tip="Tạo bằng AI"
+      onclick="document.getElementById('btn-ai').click()">
+      <span class="sb-item-icon">🤖</span>
+      <span class="sb-item-text">Tạo bằng AI</span>
+    </button>
+
+    <button class="sb-item" data-tip="Lưu bài"
+      onclick="document.getElementById('btn-save').click()">
+      <span class="sb-item-icon">💾</span>
+      <span class="sb-item-text">Lưu bài</span>
+    </button>
+
+    <button class="sb-item" data-tip="Làm mới"
+      onclick="document.getElementById('btn-reset').click()">
+      <span class="sb-item-icon">🔄</span>
+      <span class="sb-item-text">Làm mới</span>
+    </button>
+
+    <div class="sb-divider"></div>
+
+    <!-- Điều hướng -->
+    <div class="sb-section-label">Điều hướng</div>
+
+    <button class="sb-item" data-tip="Danh sách quiz"
+      onclick="window.location.href='quiz-list.html'">
+      <span class="sb-item-icon">📋</span>
+      <span class="sb-item-text">Danh sách quiz</span>
+    </button>
+
+    <button class="sb-item" data-tip="Trang chủ"
+      onclick="window.location.href='index.html'">
+      <span class="sb-item-icon">🏠</span>
+      <span class="sb-item-text">Trang chủ</span>
+    </button>
+
+  </div>
+</nav>
+
+<script>
+(function () {
+  var sidebar  = document.getElementById('ai-sidebar');
+  var toggleBtn = document.getElementById('sb-toggle-btn');
+  var mainEl   = document.querySelector('main.main-wrapper');
+
+  /* Đọc trạng thái đã lưu */
+  var closed = localStorage.getItem('ai-sidebar-closed') === '1';
+
+  function applyState(animate) {
+    sidebar.classList.toggle('closed', closed);
+    if (mainEl) mainEl.classList.toggle('sidebar-closed', closed);
+    toggleBtn.title = closed ? 'Mở sidebar' : 'Thu gọn sidebar';
+  }
+
+  /* Áp dụng ngay (không animation khi load) */
+  sidebar.style.transition = 'none';
+  if (mainEl) mainEl.style.transition = 'none';
+  applyState();
+
+  /* Bật lại transition sau 1 frame */
+  requestAnimationFrame(function () {
+    sidebar.style.transition = '';
+    if (mainEl) mainEl.style.transition = '';
+  });
+
+  toggleBtn.addEventListener('click', function () {
+    closed = !closed;
+    localStorage.setItem('ai-sidebar-closed', closed ? '1' : '0');
+    applyState(true);
+  });
+
+  /* Active item: highlight item vừa click */
+  document.querySelectorAll('.sb-item').forEach(function (item) {
+    item.addEventListener('click', function () {
+      document.querySelectorAll('.sb-item').forEach(function (i) {
+        i.classList.remove('sb-active');
+      });
+      this.classList.add('sb-active');
+    });
+  });
+})();
+</script>
+</body>
+</html>
+

@@ -1,0 +1,99 @@
+/* ============================================
+   THEME.CSS - Dark/Light Mode Variables
+   ============================================ */
+
+/* Apply theme immediately to prevent flicker */
+:root {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --primary-light: #818cf8;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --shadow-xl: 0 16px 40px rgba(0,0,0,0.15);
+
+  --transition: 0.25s ease;
+  --font-main: "Inter", "Poppins", "Roboto", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ---- LIGHT MODE (default) ---- */
+:root,
+html[data-theme="light"] {
+  --bg-base: #f8f9ff;
+  --bg-surface: #ffffff;
+  --bg-surface-2: #f1f3ff;
+  --bg-overlay: rgba(255,255,255,0.95);
+
+  --text-primary: #1e1b4b;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  --text-inverse: #ffffff;
+
+  --border: #e5e7f0;
+  --border-focus: #6366f1;
+
+  --card-bg: #ffffff;
+  --card-border: #e5e7f0;
+  --card-shadow: 0 2px 8px rgba(99,102,241,0.08);
+
+  --input-bg: #f8f9ff;
+  --input-border: #d1d5db;
+  --input-focus-bg: #ffffff;
+
+  --modal-overlay: rgba(30, 27, 75, 0.5);
+
+  --gradient-primary: linear-gradient(135deg, #6366f1, #818cf8);
+  --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* ---- DARK MODE ---- */
+html[data-theme="dark"] {
+  --bg-base: #0f0e1a;
+  --bg-surface: #1a1827;
+  --bg-surface-2: #221f35;
+  --bg-overlay: rgba(26,24,39,0.95);
+
+  --text-primary: #e8e6ff;
+  --text-secondary: #a9a3c8;
+  --text-muted: #6b6490;
+  --text-inverse: #1e1b4b;
+
+  --border: #2d2a45;
+  --border-focus: #818cf8;
+
+  --card-bg: #1a1827;
+  --card-border: #2d2a45;
+  --card-shadow: 0 2px 8px rgba(0,0,0,0.3);
+
+  --input-bg: #221f35;
+  --input-border: #2d2a45;
+  --input-focus-bg: #2d2a45;
+
+  --modal-overlay: rgba(0,0,0,0.7);
+
+  --gradient-primary: linear-gradient(135deg, #4f46e5, #6366f1);
+  --gradient-hero: linear-gradient(135deg, #4338ca 0%, #5b21b6 100%);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+  --shadow-xl: 0 16px 40px rgba(0,0,0,0.6);
+}

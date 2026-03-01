@@ -1,0 +1,354 @@
+# =====================================================
+# .gitignore for Quiz AI Creator
+# Protects API keys, user data, and system files
+# =====================================================
+
+# ==========================================
+# CRITICAL: Environment Variables & Secrets
+# ==========================================
+# NEVER commit these files - they contain API keys!
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+
+# ==========================================
+# Python
+# ==========================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+ENV/
+env/
+.venv
+.ENV
+.env.venv
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# ==========================================
+# User Data & Privacy
+# ==========================================
+# Quiz data files - may contain user-created content
+data/quizzes.json
+data/*.json
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# ==========================================
+# IDE & Editors
+# ==========================================
+# Visual Studio Code
+.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.vim/
+
+# Emacs
+*~
+\#*\#
+.\#*
+.projectile
+
+# Eclipse
+.project
+.pydevproject
+.settings/
+
+# Atom
+.atom/
+
+# ==========================================
+# Operating Systems
+# ==========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+.nfs*
+
+# ==========================================
+# Logs & Debugging
+# ==========================================
+*.log
+logs/
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# ==========================================
+# Temporary Files
+# ==========================================
+tmp/
+temp/
+*.tmp
+*.temp
+*.cache
+
+# ==========================================
+# Node.js (if any frontend tools added)
+# ==========================================
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# ==========================================
+# Project-Specific
+# ==========================================
+# Test files
+test_*.py
+*_test.py
+tests/output/
+
+# Documentation builds
+docs/_build/
+docs/_static/
+docs/_templates/
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# ==========================================
+# Security & Sensitive Data
+# ==========================================
+# SSH keys
+*.pem
+*.key
+*.pub
+id_rsa
+id_rsa.pub
+id_dsa
+id_dsa.pub
+id_ecdsa
+id_ecdsa.pub
+id_ed25519
+id_ed25519.pub
+
+# SSL certificates
+*.crt
+*.cer
+*.der
+*.p12
+*.pfx
+
+# Configuration with secrets
+config.local.json
+secrets.json
+credentials.json
+
+# ==========================================
+# Build & Deployment
+# ==========================================
+dist/
+build/
+*.egg
+*.whl
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# ==========================================
+# Version Control
+# ==========================================
+# Git
+.git/
+*.orig
+*.patch
+*.diff
+
+# ==========================================
+# IMPORTANT NOTES
+# ==========================================
+# 1. If you accidentally commit .env file:
+#    - Immediately regenerate your API key
+#    - Remove from Git history: 
+#      git filter-branch --force --index-filter \
+#      "git rm --cached --ignore-unmatch .env" \
+#      --prune-empty --tag-name-filter cat -- --all
+#
+# 2. To check what will be committed:
+#    git status
+#    git add -n .  (dry run)
+#
+# 3. Never share:
+#    - .env files
+#    - API keys
+#    - User data files
+#    - Database files

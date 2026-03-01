@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Làm bài trắc nghiệm</title>
+
+  <!-- Fix flicker: apply theme trước khi render -->
+  <script>
+    (function(){
+      var t = localStorage.getItem('quiz-app-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <!-- Google Fonts: Inter + Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/animation.css" />
+
+  <style>
+    /* ============================================
+       TAKE QUIZ - UI STYLES
+       Font: Inter + Poppins, modern hierarchy
+       ============================================ */
+
+    body {
+      font-family: "Inter", "Poppins", system-ui, sans-serif;
+    }
+
+    /* ---- PROGRESS BAR ---- */
+    .progress-wrapper {
+      width: 100%;
+      background: var(--bg-surface-2);
+      border-radius: var(--radius-full);
+      height: 8px;
+      overflow: hidden;
+      margin-bottom: 0.35rem;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--gradient-primary);
+      border-radius: var(--radius-full);
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      right: -1px;
+      top: 0;
+      width: 12px;
+      height: 100%;
+      background: rgba(255,255,255,0.4);
+      border-radius: var(--radius-full);
+      animation: pulse 1.5s ease infinite;
+    }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    /* ---- QUIZ WRAPPER ---- */
+    .quiz-wrapper {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: var(--space-xl) var(--space-md);
+      min-height: calc(100vh - 64px);
+    }
+
+    /* ---- QUIZ HEADER ---- */
+    .quiz-header {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg) var(--space-xl);
+      margin-bottom: var(--space-lg);
+    }
+    .quiz-title {
+      font-family: "Poppins", "Inter", sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.35rem;
+      line-height: 1.3;
+    }
+    .quiz-subtitle {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-bottom: var(--space-md);
+    }
+
+    /* ---- QUESTION CARD ---- */
+    .question-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-lg);
+      box-shadow: var(--card-shadow);
+      animation: slideInUp 0.35s ease;
+    }
+
+    .question-number-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+    .question-badge {
+      background: var(--gradient-primary);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .question-of {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .question-text {
+      font-family: "Poppins", "Inter", sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ---- OPTIONS ---- */
+    .options-list {
+      list-style: none;
+      margin: var(--space-lg) 0 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: 0.9rem 1.1rem;
+      background: var(--bg-surface-2);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .option-item:hover {
+      border-color: var(--primary-light);
+      background: rgba(99,102,241,0.06);
+      transform: translateX(3px);
+    }
+    .option-item.selected {
+      border-color: var(--primary);
+      background: rgba(99,102,241,0.1);
+    }
+    .option-item.correct {
+      border-color: var(--success);
+      background: rgba(16,185,129,0.1);
+    }
+    .option-item.wrong {
+      border-color: var(--danger);
+      background: rgba(239,68,68,0.08);
+    }
+
+    .option-letter {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+      background: var(--bg-surface);
+      border: 2px solid var(--border);
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+    }
+    .option-item.selected .option-letter {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .option-item.correct .option-letter {
+      background: var(--success);
+      border-color: var(--success);
+      color: #fff;
+    }
+    .option-item.wrong .option-letter {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: #fff;
+    }
+
+    .option-text {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+    .option-item.selected .option-text { color: var(--primary); font-weight: 600; }
+    .option-item.correct .option-text  { color: var(--success); font-weight: 600; }
+    .option-item.wrong .option-text    { color: var(--danger); }
+
+    /* ---- NAVIGATION ---- */
+    .nav-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      margin-top: var(--space-lg);
+      flex-wrap: wrap;
+    }
+
+    /* ---- RESULTS ---- */
+    .results-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-2xl) var(--space-xl);
+      text-align: center;
+      animation: bounceIn 0.5s ease;
+    }
+
+    .result-score-ring {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-lg);
+      position: relative;
+    }
+    .result-score-ring svg {
+      position: absolute;
+      inset: 0;
+      transform: rotate(-90deg);
+    }
+    .result-score-ring circle {
+      fill: none;
+      stroke-width: 8;
+    }
+    .ring-bg { stroke: var(--border); }
+    .ring-fill {
+      stroke: var(--primary);
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    .result-score-num {
+      font-family: "Poppins", sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--primary);
+      z-index: 1;
+      line-height: 1;
+    }
+    .result-score-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      z-index: 1;
+    }
+
+    .results-title {
+      font-family: "Poppins", sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    .results-subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: var(--space-xl);
+    }
+
+    .results-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+    }
+    @media (max-width: 480px) { .results-stats { grid-template-columns: 1fr; } }
+
+    .result-stat {
+      background: var(--bg-surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+    }
+    .result-stat-num {
+      font-size: 1.6rem;
+      font-weight: 800;
+      font-family: "Poppins", sans-serif;
+    }
+    .result-stat-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+
+    /* Review mode */
+    .review-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-md);
+      text-align: left;
+    }
+    .review-item.was-correct { border-left: 4px solid var(--success); }
+    .review-item.was-wrong   { border-left: 4px solid var(--danger); }
+
+    .review-q {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-sm);
+    }
+    .review-answer-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-top: 0.5rem; }
+    .review-answer-val   { font-size: 0.9rem; font-weight: 500; margin-top: 0.2rem; }
+    .correct-ans  { color: var(--success); }
+    .wrong-ans    { color: var(--danger); }
+
+    /* Loading / error states */
+    .state-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      text-align: center;
+      gap: var(--space-md);
+    }
+    .state-icon { font-size: 3.5rem; }
+
+    /* ── PHẦN 3: SMOOTH TRANSITIONS ── */
+    /* Progress bar đã có transition 0.5s cubic-bezier ✓ */
+    /* Option hover đã có transition 0.2s ease ✓ */
+
+    /* Scroll mượt toàn trang */
+    html { scroll-behavior: smooth; }
+
+    /* Quiz area fade khi chuyển câu */
+    #quiz-area {
+      transition: opacity 0.18s ease;
+    }
+    #quiz-area.fading {
+      opacity: 0;
+    }
+
+    /* Option item — thêm ripple nhẹ khi chọn */
+    .option-item {
+      position: relative;
+      overflow: hidden;
+    }
+    .option-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--primary);
+      opacity: 0;
+      transform: scale(0.8);
+      border-radius: inherit;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+    }
+    .option-item.ripple::after {
+      opacity: 0.08;
+      transform: scale(1);
+    }
+
+    /* ── SOUND TOGGLE BUTTON ── */
+    .sound-toggle {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all 0.2s ease;
+      z-index: 50;
+      color: var(--text-secondary);
+    }
+    .sound-toggle:hover {
+      background: var(--bg-surface-2);
+      transform: scale(1.08);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .sound-toggle.muted {
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="container">
+    <div class="header-inner">
+      <a href="../quiz-list.html" class="header-logo">
+        <span>🎓</span> Quiz AI Creator
+      </a>
+      <nav class="header-nav">
+        <button class="btn btn-secondary btn-sm" onclick="window.location.href='../quiz-list.html'">← Danh sách</button>
+        <button class="btn btn-secondary btn-sm" onclick="window.location.href='../index.html'">➕ Tạo mới</button>
+        <button id="theme-toggle" title="Chuyển theme">🌙</button>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<div id="notification-container"></div>
+
+<!-- QUIZ AREA -->
+<div class="quiz-wrapper" id="quiz-area">
+  <!-- Rendered by JS -->
+</div>
+
+<!-- Nút bật/tắt âm thanh -->
+<button class="sound-toggle" id="sound-toggle" title="Bật/tắt âm thanh">🔊</button>
+
+<!-- Services -->
+<script src="../js/services/exportService.js"></script>
+<script src="../js/theme.js"></script>
+<script src="../js/ui.js"></script>
+<script src="take_quiz.js"></script>
+
+<!-- Sound Engine (Web Audio API, không cần CDN) -->
+<script>
+(function () {
+  var _ctx = null;
+  var _muted = localStorage.getItem('quiz-sound-muted') === '1';
+
+  function getCtx() {
+    if (!_ctx) _ctx = new (window.AudioContext || window.webkitAudioContext)();
+    return _ctx;
+  }
+
+  /* Tạo 1 tiếng "bíp" nhẹ — không gây khó chịu */
+  function playTone(freq, duration, type, gain) {
+    if (_muted) return;
+    try {
+      var ctx = getCtx();
+      var osc = ctx.createOscillator();
+      var gn  = ctx.createGain();
+      osc.type = type || 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      gn.gain.setValueAtTime(gain || 0.12, ctx.currentTime);
+      gn.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      osc.connect(gn);
+      gn.connect(ctx.destination);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + duration);
+    } catch (e) {}
+  }
+
+  /* Sound API */
+  window.SoundFX = {
+    /* Chọn đáp án: tick nhẹ 880Hz */
+    select:   function () { playTone(880, 0.08, 'sine',     0.10); },
+    /* Chuyển câu: whoosh ngắn */
+    navigate: function () { playTone(440, 0.10, 'triangle', 0.08); },
+    /* Nộp bài / hoàn thành: chord vui */
+    complete: function () {
+      playTone(523, 0.18, 'sine', 0.12);
+      setTimeout(function () { playTone(659, 0.18, 'sine', 0.10); }, 80);
+      setTimeout(function () { playTone(784, 0.30, 'sine', 0.08); }, 160);
+    },
+    /* Đáp sai: bump thấp */
+    wrong:    function () { playTone(220, 0.15, 'triangle', 0.09); }
+  };
+
+  /* Toggle button */
+  function updateToggleUI() {
+    var btn = document.getElementById('sound-toggle');
+    if (!btn) return;
+    btn.textContent = _muted ? '🔇' : '🔊';
+    btn.classList.toggle('muted', _muted);
+    btn.title = _muted ? 'Bật âm thanh' : 'Tắt âm thanh';
+  }
+
+  document.getElementById('sound-toggle').addEventListener('click', function () {
+    _muted = !_muted;
+    localStorage.setItem('quiz-sound-muted', _muted ? '1' : '0');
+    updateToggleUI();
+  });
+
+  updateToggleUI();
+})();
+</script>
+</body>
+</html>
+
