@@ -112,7 +112,6 @@ def statistics():
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    debug = os.environ.get('DEBUG', 'false').lower() == 'true'
+    port = int(os.environ.get("PORT", 8000))
     logger.info(f"Starting Quiz AI API on port {port}")
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
+    app.run(host="0.0.0.0", port=port)
