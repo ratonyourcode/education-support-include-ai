@@ -29,8 +29,12 @@ CORS(app, origins=[
 
 ai_service   = GeminiAI()
 quiz_service = QuizService()
+#---- load interface ----
+from flask import send_from_directory
 
-
+@app.route("/")
+def home():
+    return send_from_directory(".", "index.html")
 # ---- Health ----
 @app.route('/api/health', methods=['GET'])
 def health():
